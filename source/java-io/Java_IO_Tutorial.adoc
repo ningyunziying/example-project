@@ -119,3 +119,291 @@ pipe connect 后，两个线程的调用是阻塞的，也就是说，read和wri
 
 === Pipe Alternatives（的可选择性）
 有其他方法进行线程之间的通信，但是简单的byte数据，通过这种方式是可行的。
+
+== Byte & Char Arrays
+
+Byte和Char Arrays通常在Java中用于在应用程序内部临时存储数据。
+
+=== Reading Arrays via InputStream or Reader
+To make such a component read from the data from an array, you will have to wrap the byte or char array in an ByteArrayInputStream or CharArrayReader. This way the bytes or chars available in the array can be read through the wrapping stream or reader.
+[source,Java]
+----
+byte[] bytes = new byte[1024];
+
+//write data into byte array...
+
+InputStream input = new ByteArrayInputStream(bytes);
+
+//read first byte
+int data = input.read();
+while(data != -1) {
+    //do something with data
+
+    //read next byte
+    data = input.read();
+}
+----
+=== Writing to Arrays via OutputStream or Writer
+
+It is also possible to write data to an *_ByteArrayOutputStream_* or *_CharArrayWriter_*. All you have to do is to create either a *_ByteArrayOutputStream_* or *_CharArrayWriter_*, and write your data to it, as you would to any other stream or writer. Once all the data is written to it, simply call the method toByteArray() or toCharArray, and all the data written is returned in array form.
+[source,java]
+----
+ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+output.write("This text is converted to bytes".getBytes("UTF-8"));
+
+byte[] bytes = output.toByteArray();
+----
+== System.in，System.out和System.error
+
+The 3 streams System.in, System.out, and System.err are also common sources or destinations of data. Most commonly used is probably System.out for writing output to the console from console programs.
+
+These 3 streams are initialized by the Java runtime when a JVM starts up, so you don't have to instantiate any streams yourself (although you can exchange them at runtime).
+
+=== System.in
+System.in is an InputStream which is typically connected to keyboard input of console programs. System.in is not used as often since data is commonly passed to a command line Java application via command line arguments, or configuration files. In applications with GUI the input to the application is given via the GUI. This is a separate input mechanism from Java IO.
+
+=== System.out
+System.out is a PrintStream. System.out normally outputs the data you write to it to the console. This is often used from console-only programs like command line tools. This is also often used to print debug statements of from a program (though it may arguably not be the best way to get debug info out of a program).
+
+=== System.err
+System.err is a PrintStream. System.err works like System.out except it is normally only used to output error texts. Some programs (like Eclipse) will show the output to System.err in red text, to make it more obvious that it is error text.
+
+== Streams
+
+Java IO streams are flows of data you can either read from, or write to. As mentioned earlier in this tutorial, streams are typically connected to a data source, or data destination, like a file, network connection etc.
+
+A stream has no concept of an index of the read or written data, like an array does. Nor can you typically move forth and back in a stream, like you can in an array, or in a file using RandomAccessFile. A stream is just a continuous flow of data.
+
+Some stream implementations like the PushbackInputStream allows you to push data back into the stream, to be re-read again later. But you can only push back a limited amount of data, and you cannot traverse the data at will, like you can with an array. Data can only be accessed sequentially.
+
+Java IO streams are typically either byte based or character based. The streams that are byte based are typically called something with "stream", like InputStream or OutputStream. These streams read and write a raw byte at a time, with the exception of the DataInputStream and DataOutputStream which can also read and write int, long, float and double values.
+
+The streams that are character based are typically called something with "Reader" or "Writer". The character based streams can read / write characters (like Latin1 or UNICODE characters). See the text Java Readers and Writers for more information about character based input and output.
+
+=== InputStream
+
+The class java.io.InputStream is the base class for all Java IO input streams. If you are writing a component that needs to read input from a stream, try to make our component depend on an InputStream, rather than any of it's subclasses (e.g. FileInputStream). Doing so makes your code able to work with all types of input streams, instead of only the concrete subclass.
+
+Depending on InputStream only isn't always possible, though. If you need to be able to push back data into the stream, you will have to depend on a PushbackInputStream - meaning your stream variable will be of this type. Otherwise your code will not be able to call the unread() method on the PushbackInputStream.
+
+You typically read data from an *_InputStream_* by calling the read() method. The read() method returns a int containing the byte value of the byte read. If there is no more data to be read, the read() method typically returns -1;
+[source,java]
+----
+InputStream input = new FileInputStream("c:\\data\\input-file.txt");
+
+int data = input.read();
+
+while(data != -1){
+  data = input.read();
+}
+----
+
+=== OutputStream
+The class *_java.io.OutputStream_* is the base class of all Java IO output streams. If you are writing a component that needs to write output to a stream, try to make sure that component depends on an OutputStream and not one of its subclasses.
+[source,java]
+----
+OutputStream output = new FileOutputStream("c:\\data\\output-file.txt");
+output.write("Hello World".getBytes());
+output.close();
+----
+
+=== Combining Streams
+
+You can combine streams into chains to achieve more advanced input and output operations.
+
+[source,java]
+----
+InputStream input = new BufferedInputStream(
+    new FileInputStream("c:\\data\\input-file.txt"));
+...
+----
+Buffering can also be applied to OutputStream's thereby batching the writes to disk (or the underlying stream) up in larger chunks. That provides faster output too. This is done with a BufferedOutputStream.
+
+Buffering is just one of the effects you can achieve by combining streams. You can also wrap your InputStream in a PushbackStream. That way you can push data back into the stream to be re-read later. This is sometimes handy during parsing. Or, you can combine two InputStreams into one using the SequenceInputStream
+
+There are several other effects that can be achieved by combining input and output streams into chains. You can even write your own stream classes to wrap the standard stream classes that comes with Java. That way you can create your own effects or filters.
+
+== Input Parsing
+Some of the classes in the Java IO API are designed to help you parse input. These classes are:
+
+* PusbackInputStream
+* PusbackReader
+* StreamTokenizer
+* PushbackReader
+* LineNumberReader
+
+It is not the purpose of this text to give you a complete course in parsing of data. The purpose was rather to give you above quick list of classes related to parsing of input data.
+
+If you have to parse data you will often end up writing your own classes that use some of the classes in this list. I know I did when I wrote the parser for the Butterfly Container Script. I used the PushbackInputStream at the core of my parser, because sometimes I needed to read ahead a character or two, to determine what the character at hand meant.
+
+I have a real life example that uses the PushbackReader in my article about Replace Strings in Streams, Arrays, Files tutorial. The example creates a TokenReplacingReader which can replace tokens of the format ${tokenName} in data read from an underlying Reader with values of your own choosing. The user of the TokenReplacingReader cannot see that this replacement takes place.
+
+== Readers and Writers
+
+The Java Reader (java.io.Reader) and Java Writer class (java.io.Writer) in Java IO work much like the InputStream and OutputStream with the exception that Reader and Writer are character based. They are intended for reading and writing text. The InputStream and OutputStream are byte based, remember?
+
+=== Reader
+
+The Java *_Reader_* is the base class of all Reader's in the Java IO API. Subclasses include a *_BufferedReader_*, *_PushbackReader_*, *_InputStreamReader_*, *_StringReader_* and several others.
+
+[source,java]
+----
+Reader reader = new FileReader("c:\\data\\myfile.txt");
+
+ int data = reader.read();
+ while(data != -1){
+     char dataChar = (char) data;
+     data = reader.read();
+ }
+----
+=== Combining Readers With InputStreams
+A Java Reader can be combined with an InputStream. If you have an InputStream and want to read characters from it, you can wrap it in an InputStreamReader. Pass the InputStream to the constructor of the InputStreamReader like this:
+[source,java]
+----
+Reader reader = new InputStreamReader(inputStream);
+----
+=== Writer
+
+The Java Writer class is the base class of all Writers in the Java IO API. Subclasses include BufferedWriter and PrintWriter among others.
+[source,java]
+----
+Writer writer = new FileWriter("c:\\data\\file-output.txt");
+
+writer.write("Hello World Writer");
+writer.close();
+----
+=== Combining Writers With OutputStreams
+A Java Writer can be combined with an OutputStream just like Readers and InputStream's. Wrap the OutputStream in an OutputStreamWriter and all characters written to the Writer are passed on to the OutputStream. Here is an OutputStreamWriter example:
+[source,java]
+----
+Writer writer = new OutputStreamWriter(outputStream);
+----
+=== Combining Readers and Writers
+Just like with streams, Reader's and Writer's can be combined into chains to achieve more interesting IO. It works just like combining the Reader with InputStream's or the Writer with OutputStream's. For instance, you can achieve buffering by wrapping a Reader in a BufferedReader, or a Writer in a BufferedWriter.
+[source,java]
+----
+Reader reader = new BufferedReader(new FileReader(...));
+
+Writer writer = new BufferedWriter(new FileWriter(...));
+----
+== Concurrent IO
+== Exception Handling
+== 13 InputStream
+The Java InputStream class represents an ordered stream of bytes. In other words, you can read data from a Java InputStream as an ordered sequence of bytes. This is useful when reading data from a file, or received over the network.
+
+*_InputStream_* 所呈现的是一个有序的字节流。
+
+The Java InputStream class is the base class (superclass) of all input streams in the Java IO API. InputStream Subclasses include the FileInputStream, BufferedInputStream and the PushbackInputStream among others. To see a full list of InputStream subclasses, go to the bottom table of the Java IO Overview page.
+
+=== Java InputStream Example
+Java InputStream's are used for reading byte based data, one byte at a time. Here is a Java InputStream example which reads all the bytes from a file:
+[source,java]
+----
+InputStream inputstream = new FileInputStream("c:\\data\\input-text.txt");
+
+int data = inputstream.read();
+while(data != -1) {
+  //do something with data...
+  doSomethingWithData(data);
+
+  data = inputstream.read();
+}
+inputstream.close();
+----
+This example creates a new FileInputStream instance. FileInputStream is a subclass of InputStream so it is safe to assign an instance of FileInputStream to an InputStream variable (the inputstream variable).
+
+例子中创建了一个 *_FileInputStream_* 实例。
+
+=== read()
+The read() method of an InputStream returns an int which contains the byte value of the byte read. Here is an InputStream read() example:
+[source,java]
+----
+int data = inputstream.read();
+char aChar = (char) data;
+----
+Subclasses of InputStream may have alternative read() methods. For instance, the DataInputStream allows you to read Java primitives like int, long, float, double, boolean etc. with its corresponding methods readBoolean(), readDouble() etc.
+
+=== End of Stream
+
+If the read() method returns -1, the end of stream has been reached, meaning there is no more data to read in the InputStream. That is, -1 as int value, not -1 as byte or short value. There is a difference here!
+
+When the end of stream has been reached, you can close the InputStream.
+
+=== read(byte[])
+The InputStream class also contains two read() methods which can read data from the InputStream's source into a byte array. These methods are:
+
+* int read(byte[])
+* int read(byte[], int offset, int length)
+
+Reading an array of bytes at a time is much faster than reading one byte at a time, so when you can, use these read methods instead of the read() method.
+
+The read(byte[]) method will attempt to read as many bytes into the byte array given as parameter as the array has space for. The read(byte[]) method returns an int telling how many bytes were actually read. In case less bytes could be read from the InputStream than the byte array has space for, the rest of the byte array will contain the same data as it did before the read started. Remember to inspect the returned int to see how many bytes were actually read into the byte array.
+
+The read(byte[], int offset, int length) method also reads bytes into a byte array, but starts at offset bytes into the array, and reads a maximum of length bytes into the array from that position. Again, the read(byte[], int offset, int length) method returns an int telling how many bytes were actually read into the array, so remember to check this value before processing the read bytes.
+
+For both methods, if the end of stream has been reached, the method returns -1 as the number of bytes read.
+
+Here is an example of how it could looke to use the InputStream's read(byte[]) method:
+[source,java]
+
+----
+InputStream inputstream = new FileInputStream("c:\\data\\input-text.txt");
+
+byte[] data      = new byte[1024];
+int    bytesRead = inputstream.read(data);
+
+while(bytesRead != -1) {
+  doSomethingWithData(data, bytesRead);
+
+  bytesRead = inputstream.read(data);
+}
+inputstream.close();
+----
+First this example create a byte array. Then it creates an int variable named bytesRead to hold the number of bytes read for each read(byte[]) call, and immediately assigns bytesRead the value returned from the first read(byte[]) call.
+
+Inside the while loop the doSomethingWithData() method is called, passing along the data byte array as well as how many bytes were read into the array as parameters. At the end of the while loop data is read into the byte array again.
+
+It should not take much imagination to figure out how to use the read(byte[], int offset, int length) method instead of read(byte[]). You pretty much just replace the read(byte[]) calls with read(byte[], int offset, int length) calls.
+
+=== mark() and reset()
+The InputStream class has two methods called mark() and reset() which subclasses of InputStream may or may not support.
+
+If an InputStream subclass supports the mark() and reset() methods, then that subclass should override the markSupported() to return true. If the markSupported() method returns false then mark() and reset() are not supported.
+
+The mark() sets a mark internally in the InputStream which marks the point in the stream to which data has been read so far. The code using the InputStream can then continue reading data from it. If the code using the InputStream wants to go back to the point in the stream where the mark was set, the code calls reset() on the InputStream. The InputStream then "rewinds" and go back to the mark, and start returning (reading) data from that point again. This will of course result in some data being returned more than once from the InputStream.
+
+The methods mark() and reset() methods are typically used when implementing parsers. Sometimes a parser may need to read ahead in the InputStream and if the parser doesn't find what it expected, it may need to rewind back and try to match the read data against
+something else.
+
+=== Closing an InputStream
+
+When you are done with a Java InputStream you must close it. You close an InputStream by calling the InputStream close() method. Here is an example of opening an InputStream, reading all data from it, and then closing it:
+[source,java]
+----
+InputStream inputstream = new FileInputStream("c:\\data\\input-text.txt");
+
+int data = inputstream.read();
+while(data != -1) {
+  data = inputstream.read();
+}
+inputstream.close();
+----
+Notice how the while loop continues until a -1 value is read from the InputStream read() method. After that, the while loop exits, and the InputStream close() method is called.
+
+The above code is not 100% robust. If an exception is thrown while reading data from the InputStream, the close() method is never called. To make the code more robust, you will have to use the Java try-with-resources construct. Proper exception handling for use of Java IO classes is also explained in my tutorial on Java IO Exception Handling.
+
+Here is an example of closing a Java InputStream using the try-with-resources construct:
+[source,java]
+----
+try( InputStream inputstream = new FileInputStream("file.txt") ) {
+
+    int data = inputstream.read();
+    while(data != -1){
+        data = inputstream.read();
+    }
+}
+----
+Notice how the InputStream is now declared inside the parantheses after the try keyword. This signals to Java that this InputStream is to be managed by the try-with-resources construct.
+
+Once the executing thread exits the try block, the inputstream variable is closed. If an exception is thrown from inside the try block, the exception is caught, the InputStream is closed, and then the exception is rethrown. You are thus guaranteed that the InputStream is closed, when used insde a try-with-resources block.
