@@ -1,0 +1,119 @@
+= Java 基础
+
+== IO
+
+== NIO
+
+== fork join
+ForkJoinPool的优势在于，可以充分利用多cpu，多核cpu的优势，把一个任务拆分成多个“小任务”，把多个“小任务”放到多个处理器核心上并行执行；
+
+=== 两个常用的类
+
+* _RecursiveTask_
+
+A recursive result-bearing
+[source,java]
+----
+class Fibonacci extends RecursiveTask<Integer> {
+*   final int n;
+*   Fibonacci(int n) { this.n = n; }
+*   protected Integer compute() {
+*     if (n <= 1)
+*       return n;
+*     Fibonacci f1 = new Fibonacci(n - 1);
+*     f1.fork();
+*     Fibonacci f2 = new Fibonacci(n - 2);
+*     return f2.compute() + f1.join();
+*   }
+* }}
+----
+* _RecursiveAction_
+
+A recursive resultless
+[source,java]
+----
+static class SortTask extends RecursiveAction {
+ *   final long[] array; final int lo, hi;
+ *   SortTask(long[] array, int lo, int hi) {
+ *     this.array = array;
+ *     this.lo = lo;
+ *     this.hi = hi;
+ *   }
+ *   SortTask(long[] array) { this(array, 0, array.length); }
+ *   protected void compute() {
+ *     if (hi - lo < THRESHOLD)
+ *       sortSequentially(lo, hi);
+ *     else {
+ *       int mid = (lo + hi) >>> 1;
+ *       invokeAll(new SortTask(array, lo, mid),
+ *                 new SortTask(array, mid, hi));
+ *       merge(lo, mid, hi);
+ *     }
+ *   }
+ *   // implementation details follow:
+ *   static final int THRESHOLD = 1000;
+ *   void sortSequentially(int lo, int hi) {
+ *     Arrays.sort(array, lo, hi);
+ *   }
+ *   void merge(int lo, int mid, int hi) {
+ *     long[] buf = Arrays.copyOfRange(array, lo, mid);
+ *     for (int i = 0, j = lo, k = mid; i < buf.length; j++)
+ *       array[j] = (k == hi || buf[i] < array[k]) ?
+ *         buf[i++] : array[k++];
+ *   }
+ * }}
+----
+== 多线程
+创建多线程的方式有两种：_继承Thread_,_实现Runnable_
+这两种方式都有一个缺陷就是：在执行完任务之后无法获取执行结果。
+如果需要获取执行结果，就必须通过共享变量或者使用线程通信的方式来达到效果，这样使用起来就比较麻烦。
+而自从Java 1.5开始，就提供了Callable和Future，通过它们可以在任务执行完毕之后得到任务执行结果。
+
+=== Callable与Runnable
+java.lang.Runnable吧，它是一个接口，在它里面只声明了一个run()方法：
+[source,java]
+----
+public interface Runnable {
+    public abstract void run();
+}
+----
+由于run()方法返回值为void类型，所以在执行完任务之后无法返回任何结果。
+
+Callable位于java.util.concurrent包下，它也是一个接口，
+在它里面也只声明了一个方法，只不过这个方法叫做call()
+[source,java]
+----
+public interface Callable<V> {
+    /**
+     * Computes a result, or throws an exception if unable to do so.
+     *
+     * @return computed result
+     * @throws Exception if unable to compute a result
+     */
+    V call() throws Exception;
+}
+----
+可以看到，这是一个泛型接口，call()函数返回的类型就是传递进来的V类型。
+那么怎么使用Callable呢？一般情况下是配合ExecutorService来使用的，在ExecutorService接口中声明了若干个submit方法的重载版本：
+[source,java]
+----
+<T> Future<T> submit(Callable<T> task);
+<T> Future<T> submit(Runnable task, T result);
+Future<?> submit(Runnable task);
+----
+=== Future
+Future就是对于具体的Runnable或者Callable任务的执行结果进行取消、查询是否完成、获取结果。必要时可以通过get方法获取执行结果，该方法会阻塞直到任务返回结果。
+
+Future类位于java.util.concurrent包下，它是一个接口：
+[source,java]
+----
+public interface Future<V> {
+    boolean cancel(boolean mayInterruptIfRunning);
+    boolean isCancelled();
+    boolean isDone();
+    V get() throws InterruptedException, ExecutionException;
+    V get(long timeout, TimeUnit unit)
+        throws InterruptedException, ExecutionException, TimeoutException;
+}
+----
+TIP: Pro tip...
