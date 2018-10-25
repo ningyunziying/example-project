@@ -1,9 +1,10 @@
 package com.ny.example.basic_type;
 
+import java.io.UnsupportedEncodingException;
 import java.util.concurrent.Future;
 
 public class BasicType {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws UnsupportedEncodingException {
         //基本数据类型
         /**
          * boolean -> Boolean
@@ -46,5 +47,12 @@ public class BasicType {
         System.out.println("------------------------------double----------------------------");
         System.out.println(Double.MAX_VALUE);
         System.out.println(Double.MIN_VALUE);
+
+        String s = "宁";
+        System.out.println(s.getBytes());
+        byte[] b_gbk = s.getBytes("GBK");
+        byte[] b_utf8 = s.getBytes("UTF-8");
+        byte[] b_iso88591 = s.getBytes("ISO8859-1");
+        System.out.println("d");
     }
 }
