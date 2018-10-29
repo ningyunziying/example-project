@@ -222,3 +222,55 @@ The returned submap contains only the key "2", because only this key is greater 
 * descendingKeySet()
 * descendingMap()
 * navigableKeySet()
+
+== CountDownLatch
+
+A java.util.concurrent.CountDownLatch is a concurrency construct that allows one or more threads to wait for a given set of operations to complete.
+
+A CountDownLatch is initialized with a given count. This count is decremented by calls to the countDown() method. Threads waiting for this count to reach zero can call one of the await() methods. Calling await() blocks the thread until the count reaches zero.
+
+Below is a simple example. After the Decrementer has called countDown() 3 times on the CountDownLatch, the waiting Waiter is released from the await() call.
+
+== CyclicBarrier
+
+CyclicBarrier 的字面意思是可循环使用（Cyclic）的屏障（Barrier）。它要做的事情是，让一组线程到达一个屏障（也可以叫同步点）时被阻塞，直到最后一个线程到达屏障时，屏障才会开门，所有被屏障拦截的线程才会继续干活。CyclicBarrier默认的构造方法是CyclicBarrier(int parties)，其参数表示屏障拦截的线程数量，每个线程调用await方法告诉CyclicBarrier我已经到达了屏障，然后当前线程被阻塞。
+
+image::images/concurrency-b4835.png[]
+
+----
+//parties表示屏障拦截的线程数量，当屏障撤销时，先执行barrierAction，然后在释放所有线程
+public CyclicBarrier(int parties, Runnable barrierAction)
+//barrierAction默认为null
+public CyclicBarrier(int parties)
+
+/*
+ *当前线程等待直到所有线程都调用了该屏障的await()方法
+ *如果当前线程不是将到达的最后一个线程，将会被阻塞。解除阻塞的情况有以下几种
+     1）最后一个线程调用await()
+     2）当前线程被中断
+     3）其他正在该CyclicBarrier上等待的线程被中断
+     4）其他正在该CyclicBarrier上等待的线程超时
+     5）其他某个线程调用该CyclicBarrier的reset()方法
+ *如果当前线程在进入此方法时已经设置了该线程的中断状态或者在等待时被中断，将抛出InterruptedException，并且清除当前线程的已中断状态。
+ *如果在线程处于等待状态时barrier被reset()或者在调用await()时 barrier 被损坏，将抛出 BrokenBarrierException 异常。
+ *如果任何线程在等待时被中断，则其他所有等待线程都将抛出 BrokenBarrierException 异常，并将 barrier 置于损坏状态。 *如果当前线程是最后一个将要到达的线程，并且构造方法中提供了一个非空的屏障操作（barrierAction），那么在允许其他线程继续运行之前，当前线程将运行该操作。如果在执行屏障操作过程中发生异常，则该异常将传播到当前线程中，并将 barrier 置于损坏状态。
+ *
+ *返回值为当前线程的索引，0表示当前线程是最后一个到达的线程
+ */
+public int await() throws InterruptedException, BrokenBarrierException
+//在await()的基础上增加超时机制，如果超出指定的等待时间，则抛出 TimeoutException 异常。如果该时间小于等于零，则此方法根本不会等待。
+public int await(long timeout, TimeUnit unit) throws InterruptedException, BrokenBarrierException, TimeoutException
+
+//将屏障重置为其初始状态。如果所有参与者目前都在屏障处等待，则它们将返回，同时抛出一个BrokenBarrierException。
+public void reset()
+----
+
+　　对于失败的同步尝试，CyclicBarrier 使用了一种要么全部要么全不 (all-or-none) 的破坏模式：如果因为中断、失败或者超时等原因，导致线程过早地离开了屏障点，那么在该屏障点等待的其他所有线程也将通过 BrokenBarrierException（如果它们几乎同时被中断，则用 InterruptedException）以反常的方式离开。
+
+== 14、Exchanger
+
+The java.util.concurrent.Exchanger class represents a kind of rendezvous point where two threads can exchange objects. Here is an illustration of this mechanism:
+
+image::images/concurrency-7785c.png[]
+
+== 15、Semaphore(信号量)
