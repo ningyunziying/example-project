@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 public class StreamExample {
     @Test
@@ -22,9 +23,17 @@ public class StreamExample {
     @Test
     public void byteTest(){
         byte d = '3';
-        String s = "李";
+        String s = new String("宁");
         System.out.println(s.getBytes().length);
-        byte[] bytes = s.getBytes();
+        s.toCharArray();
+        byte[] bytes = s.getBytes(Charset.forName("utf-8"));
+        byte[] bytes2 = s.getBytes(Charset.forName("iso-8859-1"));
+        byte[] bytes3 = s.getBytes(Charset.forName("GBK"));
+        byte a[] ="国庆60周年".getBytes();
+        char[] b="国庆60周年".toCharArray();
         System.out.println(bytes[0]);
+        String ss = "宁";
+        System.out.println(s.length());
+
     }
 }
