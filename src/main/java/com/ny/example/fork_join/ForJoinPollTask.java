@@ -22,7 +22,5 @@ public class ForJoinPollTask {
         Future<Integer> future = pool.submit(task); //提交分解的SumTask 任务
         System.out.println("多线程执行结果：" + future.get());
         pool.shutdown(); //关闭线程池
-
-
     }
 }
