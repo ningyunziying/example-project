@@ -6,7 +6,7 @@ Java 5 中添加了一个新的并发处理包 *_java.util.concurrent_*。
 A BlockingQueue is typically used to have on thread produce objects, which another thread consumes. Here is a diagram that illustrates this principle:
 一个BlockingQueue 的典型用法是一个线程生产对象，另外一个线程去消费对象。
 
-image::images/concurrency-3d96b.png[]
+image::images/concurrency-3d96b.pna   `vvvvvvvvvvvvvvvvv  此b vg[]
 
 ==== BlockingQueue Methods
 
@@ -274,3 +274,26 @@ The java.util.concurrent.Exchanger class represents a kind of rendezvous point w
 image::images/concurrency-7785c.png[]
 
 == 15、Semaphore(信号量)
+java.util.concurrent.Semaphore 是一个计数信号量，有两个重要的方法：
+
+* acquire()
+* release()
+计数信号量是一个给定数量凭证的。通过acquire去获取一个凭证，通过release去归还一个凭证。
+
+=== Semaphore的用法
+
+1.计数信号量保护一个临界段，不超过n个入口。
+2.两个线程之间进行通信。
+
+=== 公平性
+
+信号量是不保证公平性的，当然你也可以通过指定构造方法中的公平去强制指定信号量的公公平性，但是是不推荐的，因为强制保证公平性在并发上会有效率的损耗。
+
+信号量更多的方法
+
+* availablePermits()
+* acquireUninterruptibly()
+* drainPermits()
+* hasQueuedThreads()
+* getQueuedThreads()
+* tryAcquire()
