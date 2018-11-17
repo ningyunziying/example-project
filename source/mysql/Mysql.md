@@ -286,5 +286,26 @@ NULL意味着没值”no data“,NULL不区分大小写。
 
 1.在CentOS7中安装MySQL8
 
+```
+#download yum source depend on where you choice
+wget mysql80-community-release-el7-1.noarch.rpm
+yum install -y mysql80-community-release-el7-1.noarch.rpm
+#install mysql servier
+yum -y install mysql-community-server
+#restart the service
+systemctl stop firewalld.service
+#get the generation word
+grep "password" /var/log/mysqld.log
+#enter the mysql
+mysql -uroot -p
+#开启远程连接权限
+update user set host = '%' where user ='root';
+flush privileges;
+#创建用户
+create user admin@'%' identified  by '----';
+#赋予权限
+GRANT ALL ON *.* TO `admin`@`%` WITH GRANT OPTION;
+```
+
 
 
