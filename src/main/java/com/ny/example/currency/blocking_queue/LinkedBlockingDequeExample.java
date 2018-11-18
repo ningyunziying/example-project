@@ -1,4 +1,4 @@
-package com.ny.example.currency.linked_blocking_deque;
+package com.ny.example.currency.blocking_queue;
 
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;

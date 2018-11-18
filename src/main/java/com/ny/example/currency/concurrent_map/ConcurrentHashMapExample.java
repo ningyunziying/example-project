@@ -1,4 +1,4 @@
-package com.ny.example.currency.concurrenct_map;
+package com.ny.example.currency.concurrent_map;
 
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
