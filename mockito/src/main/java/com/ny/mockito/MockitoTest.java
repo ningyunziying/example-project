@@ -17,7 +17,7 @@ public class MockitoTest extends Mockito {
         List mockedList = mock(List.class);
         //using mock object
         mockedList.add("one");
-        mockedList.clear();
+        //mockedList.clear();
 
         //verification
         verify(mockedList).add("one");
