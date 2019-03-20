@@ -5,6 +5,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import sun.misc.Unsafe;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -166,6 +167,7 @@ public class MockitoTest extends Mockito {
     //Makes the verification error easier to read because the field name is used to identify the mock.
     @Mock
     List<String> mockedList;
+    Unsafe
 
     @Test
     public void T08() {
