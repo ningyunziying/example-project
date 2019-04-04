@@ -167,7 +167,6 @@ public class MockitoTest extends Mockito {
     //Makes the verification error easier to read because the field name is used to identify the mock.
     @Mock
     List<String> mockedList;
-    Unsafe
 
     @Test
     public void T08() {
