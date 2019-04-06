@@ -11,6 +11,7 @@
     <modules>
         <module>spi</module>
         <module>mockito</module>
+        <module>logging</module>
     </modules>
     <build>
         <plugins>

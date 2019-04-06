@@ -1,0 +1,24 @@
+<configuration packagingData="true">
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type
+             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <append>false</append>
+        <file>myApp.log</file>
+        <encoder>
+            <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="com.ny.logging" level="debug">
+        <appender-ref ref="FILE"/>
+    </logger>
+    <logger name="com.ny.logging2" level="info"/>
+    <root level="info">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>
