@@ -12,6 +12,7 @@
         <module>spi</module>
         <module>mockito</module>
         <module>logging</module>
+        <module>asm</module>
     </modules>
     <build>
         <plugins>
