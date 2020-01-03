@@ -13,7 +13,11 @@
         <module>mockito</module>
         <module>logging</module>
         <module>asm</module>
+        <module>spring-boot-kafka</module>
     </modules>
+    <properties>
+        <spring-boot-version>2.2.2.RELEASE</spring-boot-version>
+    </properties>
     <build>
         <plugins>
             <plugin>
