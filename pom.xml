@@ -13,7 +13,6 @@
         <module>mockito</module>
         <module>logging</module>
         <module>asm</module>
-        <module>spring-boot-kafka</module>
         <module>spring-boot</module>
     </modules>
     <properties>
