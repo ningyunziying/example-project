@@ -14,6 +14,7 @@
         <module>logging</module>
         <module>asm</module>
         <module>spring-boot-kafka</module>
+        <module>spring-boot</module>
     </modules>
     <properties>
         <spring-boot-version>2.2.2.RELEASE</spring-boot-version>
@@ -37,6 +38,11 @@
             <artifactId>junit</artifactId>
             <version>4.12</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>x-pack-transport</artifactId>
+            <version>5.6.0</version>
         </dependency>
     </dependencies>
 </project>
