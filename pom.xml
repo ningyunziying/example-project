@@ -10,14 +10,14 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>spi</module>
-        <module>mockito</module>
         <module>logging</module>
         <module>asm</module>
         <module>spring-boot</module>
         <module>java-basic</module>
+        <module>spring-boot-dubbo</module>
     </modules>
     <properties>
-        <spring-boot-version>2.2.2.RELEASE</spring-boot-version>
+        <spring-boot-version>2.3.1.RELEASE</spring-boot-version>
     </properties>
     <build>
         <plugins>
@@ -38,11 +38,6 @@
             <artifactId>junit</artifactId>
             <version>4.12</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.elasticsearch.client</groupId>
-            <artifactId>x-pack-transport</artifactId>
-            <version>5.6.0</version>
         </dependency>
     </dependencies>
 </project>
