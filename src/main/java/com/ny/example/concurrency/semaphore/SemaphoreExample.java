@@ -8,7 +8,7 @@ import java.util.concurrent.Semaphore;
 public class SemaphoreExample {
     public static void main(String[] args) {
         ExecutorService executorService = Executors.newCachedThreadPool();
-        Semaphore semaphore = new Semaphore(5,true);
+        Semaphore semaphore = new Semaphore(5, true);
         for (int i = 0; i < 20; i++) {
             final long num = i;
             executorService.execute(() -> {

@@ -14,6 +14,7 @@
         <module>logging</module>
         <module>asm</module>
         <module>spring-boot</module>
+        <module>java-basic</module>
     </modules>
     <properties>
         <spring-boot-version>2.2.2.RELEASE</spring-boot-version>
