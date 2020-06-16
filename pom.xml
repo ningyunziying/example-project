@@ -16,6 +16,8 @@
         <module>java-basic</module>
         <module>spring-boot-dubbo</module>
         <module>netty</module>
+        <module>serializer</module>
+        <module>spring-boot-elasticsearch</module>
     </modules>
     <properties>
         <spring-boot-version>2.3.1.RELEASE</spring-boot-version>
