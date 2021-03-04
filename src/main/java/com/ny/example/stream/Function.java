@@ -3,7 +3,6 @@ package com.ny.example.stream;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.jws.soap.SOAPBinding;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
