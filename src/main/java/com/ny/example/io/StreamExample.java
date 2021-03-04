@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class StreamExample {
     @Test
@@ -19,6 +20,7 @@ public class StreamExample {
             //read next byte
             data = input.read();
         }
+
     }
     @Test
     public void byteTest(){
