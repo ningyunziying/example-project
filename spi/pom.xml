@@ -8,9 +8,10 @@
         <artifactId>example-project</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <groupId>com.ny</groupId>
     <artifactId>spi</artifactId>
     <version>1.0-SNAPSHOT</version>
-
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
 </project>

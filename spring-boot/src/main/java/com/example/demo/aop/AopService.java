@@ -1,6 +1,5 @@
 package com.example.demo.aop;
 
-import com.example.demo.aop.AuditLog;
 import org.springframework.stereotype.Service;
 
 @Service
